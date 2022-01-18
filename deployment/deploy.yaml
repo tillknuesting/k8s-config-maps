@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: configmaptest-deployment
+  labels:
+    app: configmaptest
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: configmaptest
+  template:
+    metadata:
+      labels:
+        app: configmaptest
+    spec:
+      containers:
+        - name: configmaptest-container
+          image: gcr.io/google_containers/busybox
+          command: [ "/bin/sh", "-c", "env" ]
+          env:
+            # Define the environment variable
+            - name: REDIS_SERVER_ADDRESS # Notice that the case is different here
+              # from the key name in the ConfigMap.
+              valueFrom:
+                configMapKeyRef:
+                  name: configmaptest-config          # The ConfigMap this value comes from.
+                  key: redis_server_address # The key to fetch.
